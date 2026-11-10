@@ -4,26 +4,32 @@ public class PlayerStats : MonoBehaviour, IPlayerHP, IPlayerHeat
     [SerializeField] float playerHP = 100f;
     [SerializeField] float playerArmor = 50f;
     float playerHeat;
-    [Range(0.1f, 100f)]
-    [SerializeField] float heatBuildSpeed = 100f;
-    [SerializeField] float heatThreshold = 10f;
+    bool playerIsInheat;
+    bool playerCanHeal;
 
-    public void PlayerHP(float HP)
+    public void IPlayerHP(float HP)
     {
-        playerHP = HP;
+        playerHP += HP;
+
+        if (playerHP <= 0)
+        {
+            playerHP = 0;
+
+            //Insert Death
+        }
+
+        if (playerHP >= 100)
+        {
+            playerHP = 100;
+        }
+
+        Debug.Log("Receiving HP Value");
     }
 
-    public void IPlayerHeat()
+    public void IPlayerHeat(float heat, bool isInHeat)
     {
-        playerHeat += (heatBuildSpeed / 100f) * Time.deltaTime;
-        // playerHeat += Time.deltaTime;
-
-        Debug.Log($"Receiving Heat");
-
-        if (playerHeat >= heatThreshold)
-        {
-            playerHeat = heatThreshold;
-            Debug.Log($"Player is Sweating");
-        }
+        playerHeat = heat;
+        playerIsInheat = isInHeat;
+        Debug.Log($"Taking Heat");
     }
 }

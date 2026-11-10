@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class PlayerRaycastSun : MonoBehaviour
+public class PlayerRaycastSun : MonoBehaviour, IPlayerRaycastSun
 {
-    public PlayerStats playerStats;
     IPlayerHP IplayerHP;
     IPlayerHeat IplayerHeat;
     RaycastHit rayHit;
@@ -10,9 +9,23 @@ public class PlayerRaycastSun : MonoBehaviour
     float heat;
     [SerializeField] LayerMask layerMask;
 
+    [Header("Player Heat")]
+    float builtHeat;
+    float playerHeat;
+    [Range(0.1f, 100f)]
+    [SerializeField] float heatBuildSpeed = 100f;
+    [Range(0.1f, 200f)]
+    [SerializeField] float heatBuildBaseMultiplier = 1f;
+    [SerializeField] float heatThreshold = 10f;
+    [Range(0.1f, 100f)]
+    [SerializeField] float tickDamage = 1f;
+    [Range(0.1f, 200f)]
+    [SerializeField] float tickDamageSpeedBaseMultiplier = 1f;
+
     void Start()
     {
         target = GameObject.Find("Sun");
+        IplayerHP = GetComponent<IPlayerHP>();
         IplayerHeat = GetComponent<IPlayerHeat>();
     }
 
@@ -32,15 +45,49 @@ public class PlayerRaycastSun : MonoBehaviour
         {
             if (rayHit.collider.CompareTag("Sun"))
             {
-                IplayerHeat.IPlayerHeat();
+                PlayerHeat(true);
             }
             else
             {
+                PlayerHeat(false);
                 Debug.Log($"Detecting: {rayHit.transform.name} instead");
             }
         }
         Debug.DrawRay(transform.position, direction * dist, Color.cyan);
     }
+    public void PlayerHeat(bool isInHeat)
+    {
+        float tick = (((tickDamageSpeedBaseMultiplier / 100f) * tickDamage) * Time.deltaTime);
 
+        if (isInHeat == true)
+        {
+            playerHeat += (heatBuildBaseMultiplier * (heatBuildSpeed / 100f)) * Time.deltaTime;
+            builtHeat = playerHeat;
+            IplayerHeat.IPlayerHeat(playerHeat, isInHeat);
 
+            if (playerHeat >= heatThreshold)
+            {
+                playerHeat = heatThreshold;
+                IplayerHP.IPlayerHP(-tick);
+            }
+        }
+        else
+        {
+            IplayerHeat.IPlayerHeat(builtHeat, isInHeat);
+        }
+
+    }
+
+    public void SetHeat(float num)
+    {
+        playerHeat = num;
+        builtHeat = num;
+        IplayerHeat.IPlayerHeat(playerHeat, false);
+
+    }
+}
+
+public interface IPlayerRaycastSun
+{
+    void SetHeat(float num);
 }

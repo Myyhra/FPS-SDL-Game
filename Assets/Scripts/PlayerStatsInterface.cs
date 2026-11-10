@@ -1,8 +1,8 @@
 public interface IPlayerHP
 {
-    void PlayerHP(float HP);
+    void IPlayerHP(float HP);
 }
 public interface IPlayerHeat
 {
-    void IPlayerHeat();
+    void IPlayerHeat(float heat, bool isInHeat);
 }
