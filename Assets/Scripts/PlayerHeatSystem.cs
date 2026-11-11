@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerRaycastSun : MonoBehaviour, IPlayerRaycastSun
+public class PlayerHeatSystem : MonoBehaviour, IPlayerRaycastSun
 {
     IPlayerHP IplayerHP;
     IPlayerHeat IplayerHeat;
@@ -25,11 +25,16 @@ public class PlayerRaycastSun : MonoBehaviour, IPlayerRaycastSun
     void Start()
     {
         target = GameObject.Find("Sun");
-        IplayerHP = GetComponent<IPlayerHP>();
-        IplayerHeat = GetComponent<IPlayerHeat>();
+        IplayerHP = GetComponentInParent<IPlayerHP>();
+        IplayerHeat = GetComponentInParent<IPlayerHeat>();
+
+
+        //Getting Max Heat Value for the UI
+        IPlayerGetMaxHeat setMaxHeat = GetComponentInParent<IPlayerGetMaxHeat>();
+        setMaxHeat.MaxHeat(heatThreshold);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         Detect();
     }
@@ -50,13 +55,13 @@ public class PlayerRaycastSun : MonoBehaviour, IPlayerRaycastSun
             else
             {
                 PlayerHeat(false);
-                Debug.Log($"Detecting: {rayHit.transform.name} instead");
             }
         }
         Debug.DrawRay(transform.position, direction * dist, Color.cyan);
     }
     public void PlayerHeat(bool isInHeat)
     {
+        //Player Damage Take Overtime
         float tick = (((tickDamageSpeedBaseMultiplier / 100f) * tickDamage) * Time.deltaTime);
 
         if (isInHeat == true)
@@ -90,4 +95,8 @@ public class PlayerRaycastSun : MonoBehaviour, IPlayerRaycastSun
 public interface IPlayerRaycastSun
 {
     void SetHeat(float num);
+}
+public interface IPlayerGetMaxHeat
+{
+    void MaxHeat(float max);
 }
