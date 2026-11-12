@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "GDP Finals.slnx",
+    "dotnet.defaultSolution": "FPS-SDL-Game.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }
